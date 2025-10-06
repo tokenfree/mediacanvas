@@ -582,17 +582,18 @@
           const baseHeight = 1080;
           
           // Determine the appropriate multiplier based on image size
+          // Check both width and height separately to ensure both fit
           let multiplier = 1;
-          const maxDimension = Math.max(img.width, img.height);
           
-          if (maxDimension > 5760) {
-            multiplier = 4; // 7680x4320
-          } else if (maxDimension > 3840) {
-            multiplier = 3; // 5760x3240
-          } else if (maxDimension > 1920) {
-            multiplier = 2; // 3840x2160
-          } else {
+          // Check if image fits within each resolution tier
+          if (img.width <= 1920 && img.height <= 1080) {
             multiplier = 1; // 1920x1080
+          } else if (img.width <= 3840 && img.height <= 2160) {
+            multiplier = 2; // 3840x2160
+          } else if (img.width <= 5760 && img.height <= 3240) {
+            multiplier = 3; // 5760x3240
+          } else {
+            multiplier = 4; // 7680x4320
           }
           
           // Set strict canvas dimensions
