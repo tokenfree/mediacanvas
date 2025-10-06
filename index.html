@@ -271,6 +271,44 @@
       font-weight: bold;
     }
 
+    .controls-toggle-button {
+      position: absolute;
+      top: 20px;
+      left: 140px;
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 50%;
+      display: none;
+      z-index: 2;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .controls-toggle-button:hover {
+      background: rgba(255, 255, 255, 0.95);
+      transform: scale(1.05);
+    }
+
+    .controls-toggle-button:active {
+      transform: scale(0.95);
+    }
+
+    .controls-toggle-button::before {
+      content: '⚙';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      color: #007bff;
+      font-weight: bold;
+    }
+
     .arrow.hidden {
       opacity: 0;
     }
@@ -353,6 +391,143 @@
     .image-list::-webkit-scrollbar-thumb:hover {
       background-color: #A0A0A3;
     }
+
+    /* Selected Image Controls Styling */
+    .image-controls-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 300px;
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      z-index: 4;
+      display: none;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .controls-section-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #555;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 5px;
+    }
+
+    .controls-form-group {
+      margin-bottom: 15px;
+    }
+
+    .controls-form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #333;
+      font-size: 12px;
+    }
+
+    .controls-form-group input[type="number"],
+    .controls-form-group input[type="range"] {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .controls-slider-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .controls-slider {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: #ddd;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .controls-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #007bff;
+      cursor: pointer;
+    }
+
+    .controls-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #007bff;
+      cursor: pointer;
+      border: none;
+    }
+
+    .controls-button-group {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .control-action-btn {
+      padding: 8px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: background 0.3s;
+    }
+
+    .control-action-btn:hover {
+      background: #f0f0f0;
+    }
+
+    .control-action-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .no-selection-message {
+      text-align: center;
+      color: #999;
+      font-style: italic;
+      padding: 20px;
+      font-size: 14px;
+    }
+
+    .close-controls-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 30px;
+      height: 30px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: #666;
+      line-height: 1;
+    }
+
+    .close-controls-btn:hover {
+      color: #000;
+    }
   </style>
 </head>
 <body>
@@ -362,6 +537,7 @@
     <div class="control-buttons">
       <div class="upload-button" onclick="document.getElementById('file-input').click()">+</div>
       <div class="blur-toggle" title="Toggle Background Blur"></div>
+      <button onclick="$('.image-controls-panel').toggle()" style="padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Toggle Controls</button>
     </div>
   </div>
 
@@ -375,12 +551,62 @@
     <div class="index"></div>
     <div class="exit-button"></div>
     <div class="download-button" title="Download with blur effect"></div>
+    <div class="controls-toggle-button" title="Image Controls"></div>
     <div class="arrow left-arrow"></div>
     <div class="arrow right-arrow"></div>
   </div>
 
   <div class="image-list">
     <ul></ul>
+  </div>
+
+  <div class="image-controls-panel">
+    <button class="close-controls-btn" title="Close">×</button>
+    <div class="controls-section-title">Selected Image Controls</div>
+    <div id="selectedImageInfo" class="no-selection-message">Select an image to edit its properties</div>
+    
+    <div id="imageControlsContent" style="display: none;">
+      <div class="controls-button-group">
+        <button class="control-action-btn" id="zoomIn" title="Zoom In">🔍+</button>
+        <button class="control-action-btn" id="zoomOut" title="Zoom Out">🔍-</button>
+        <button class="control-action-btn" id="resetZoom" title="Reset Zoom">⚡</button>
+        <button class="control-action-btn" id="centerImage" title="Center">📍</button>
+      </div>
+
+      <div class="controls-form-group">
+        <label>Image scale</label>
+        <div class="controls-slider-container">
+          <input type="range" class="controls-slider" id="scaleSlider" min="10" max="300" value="100">
+          <span id="scaleValue">100</span>%
+        </div>
+      </div>
+
+      <div class="controls-form-group">
+        <label>Opacity</label>
+        <div class="controls-slider-container">
+          <input type="range" class="controls-slider" id="opacitySlider" min="0" max="100" value="100">
+          <span id="opacityValue">100</span>%
+        </div>
+      </div>
+
+      <div class="controls-form-group">
+        <label>Rotation (degrees)</label>
+        <div class="controls-slider-container">
+          <input type="range" class="controls-slider" id="rotationSlider" min="-180" max="180" value="0">
+          <span id="rotationValue">0</span>°
+        </div>
+      </div>
+
+      <div class="controls-form-group">
+        <label>Position X</label>
+        <input type="number" id="posXInput" value="0" step="1">
+      </div>
+
+      <div class="controls-form-group">
+        <label>Position Y</label>
+        <input type="number" id="posYInput" value="0" step="1">
+      </div>
+    </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -412,6 +638,10 @@
       var blurEnabled = false;
       var preloadedImages = {};  // Cache for preloaded images
       var currentBlurIndex = 0;
+      
+      // Image control properties
+      var imageProperties = [];
+      var selectedImageIndex = -1;
 
       function preloadAdjacentImages(index) {
         if (!blurEnabled) return;
@@ -445,10 +675,19 @@
       function updateMedia() {
         var currentMedia = media[currentIndex];
         var currentType = fileTypes[currentIndex];
+        var props = imageProperties[currentIndex] || { scale: 1, opacity: 1, rotation: 0, offsetX: 0, offsetY: 0 };
 
         if (currentType.startsWith('image')) {
-          $('.full-screen img').show().attr('src', currentMedia);
+          var $img = $('.full-screen img');
+          $img.show().attr('src', currentMedia);
           $('.full-screen video').hide()[0].pause();
+          
+          // Apply transformations
+          var transform = `translate(${props.offsetX}px, ${props.offsetY}px) scale(${props.scale}) rotate(${props.rotation}deg)`;
+          $img.css({
+            'transform': transform,
+            'opacity': props.opacity
+          });
 
           if (blurEnabled) {
             const $blurs = $('.full-screen .background-blur');
@@ -464,7 +703,16 @@
           }
         } else if (currentType.startsWith('video')) {
           $('.full-screen img').hide();
-          $('.full-screen video').show().attr('src', currentMedia)[0].play();
+          var $video = $('.full-screen video');
+          $video.show().attr('src', currentMedia)[0].play();
+          
+          // Apply transformations to video as well
+          var transform = `translate(${props.offsetX}px, ${props.offsetY}px) scale(${props.scale}) rotate(${props.rotation}deg)`;
+          $video.css({
+            'transform': transform,
+            'opacity': props.opacity
+          });
+          
           if (blurEnabled) {
             $('.full-screen .background-blur').css({
               'display': 'block',
@@ -499,9 +747,18 @@
         if (media.length > 0) {
           updateMedia();
           $('.full-screen').show();
-          $('.arrow, .exit-button, .download-button, .full-screen .index').show();
+          $('.arrow, .exit-button, .download-button, .controls-toggle-button, .full-screen .index').show();
           $('.image-container').hide();
         }
+      });
+
+      // Controls toggle button
+      $('.controls-toggle-button').click(function(e) {
+        e.stopPropagation();
+        // Set the current image as selected
+        selectedImageIndex = currentIndex;
+        $('.image-controls-panel').toggle();
+        updateImageControls();
       });
 
       $(document).keydown(function(e) {
@@ -574,6 +831,7 @@
         const ctx = canvas.getContext('2d');
         const currentMedia = media[currentIndex];
         const fileName = fileNames[currentIndex];
+        const props = imageProperties[currentIndex] || { scale: 1, opacity: 1, rotation: 0, offsetX: 0, offsetY: 0 };
         
         const img = new Image();
         img.onload = function() {
@@ -629,7 +887,7 @@
             ctx.fillRect(0, 0, canvasWidth, canvasHeight);
           }
           
-          // Draw the main image in the center (90% of canvas size)
+          // Calculate main image dimensions (90% of canvas size as base)
           const mainImageMaxWidth = canvasWidth * 0.9;
           const mainImageMaxHeight = canvasHeight * 0.9;
           
@@ -642,18 +900,40 @@
             mainWidth = mainImageMaxHeight * (img.width / img.height);
           }
           
-          const mainX = (canvasWidth - mainWidth) / 2;
-          const mainY = (canvasHeight - mainHeight) / 2;
+          // Apply user's scale transformation
+          mainWidth *= props.scale;
+          mainHeight *= props.scale;
+          
+          // Calculate base position (centered)
+          let mainX = (canvasWidth - mainWidth) / 2;
+          let mainY = (canvasHeight - mainHeight) / 2;
+          
+          // Apply user's position offset
+          mainX += props.offsetX;
+          mainY += props.offsetY;
+          
+          // Apply transformations with rotation
+          ctx.save();
+          
+          // Set opacity
+          ctx.globalAlpha = props.opacity;
+          
+          // Move to the center of where the image will be drawn
+          const centerX = mainX + mainWidth / 2;
+          const centerY = mainY + mainHeight / 2;
+          ctx.translate(centerX, centerY);
+          
+          // Apply rotation
+          ctx.rotate((props.rotation * Math.PI) / 180);
           
           // Add rounded corners to main image
-          ctx.save();
           const cornerRadius = Math.min(mainWidth, mainHeight) * 0.05; // 5% of smaller dimension
           
           ctx.beginPath();
-          ctx.roundRect(mainX, mainY, mainWidth, mainHeight, cornerRadius);
+          ctx.roundRect(-mainWidth / 2, -mainHeight / 2, mainWidth, mainHeight, cornerRadius);
           ctx.clip();
           
-          ctx.drawImage(img, mainX, mainY, mainWidth, mainHeight);
+          ctx.drawImage(img, -mainWidth / 2, -mainHeight / 2, mainWidth, mainHeight);
           ctx.restore();
           
           // Create download link
@@ -700,10 +980,31 @@
         $('.image-list').show();
       });
 
-      $('.image-list').on('click', 'li', function() {
-        currentIndex = $(this).data('index');
-        updateMedia();
+      $('.image-list').on('click', 'li', function(e) {
+        var clickedIndex = $(this).data('index');
+        
+        // Check if it's a right-click or ctrl+click to open controls
+        if (e.ctrlKey || e.button === 2) {
+          e.preventDefault();
+          selectedImageIndex = clickedIndex;
+          $('.image-controls-panel').show();
+          updateImageControls();
+        } else {
+          // Normal click - just navigate to the image
+          currentIndex = clickedIndex;
+          updateMedia();
+        }
         $('.image-list').hide();
+      });
+
+      // Add right-click context menu prevention and use it to open controls
+      $('.image-list').on('contextmenu', 'li', function(e) {
+        e.preventDefault();
+        var clickedIndex = $(this).data('index');
+        selectedImageIndex = clickedIndex;
+        $('.image-controls-panel').show();
+        $('.image-list').hide();
+        updateImageControls();
       });
 
       $(document).mouseup(function(e) {
@@ -722,6 +1023,14 @@
               media.push(e.target.result);
               fileNames.push(file.name);
               fileTypes.push(file.type);
+              // Initialize default properties for new image
+              imageProperties.push({
+                scale: 1,
+                opacity: 1,
+                rotation: 0,
+                offsetX: 0,
+                offsetY: 0
+              });
               if (media.length === 1) {
                 updateThumbnail(e.target.result, file.type);
               }
@@ -730,6 +1039,115 @@
           reader.readAsDataURL(files[i]);
         }
       });
+
+      // Close controls panel
+      $('.close-controls-btn').click(function() {
+        $('.image-controls-panel').hide();
+        selectedImageIndex = -1;
+      });
+
+      // Image control buttons
+      $('#zoomIn').click(function() {
+        if (selectedImageIndex >= 0) {
+          var props = imageProperties[selectedImageIndex];
+          props.scale = Math.max(0.1, Math.min(3, props.scale * 1.2));
+          updateImageControls();
+          updateMedia();
+        }
+      });
+
+      $('#zoomOut').click(function() {
+        if (selectedImageIndex >= 0) {
+          var props = imageProperties[selectedImageIndex];
+          props.scale = Math.max(0.1, Math.min(3, props.scale * 0.8));
+          updateImageControls();
+          updateMedia();
+        }
+      });
+
+      $('#resetZoom').click(function() {
+        if (selectedImageIndex >= 0) {
+          imageProperties[selectedImageIndex].scale = 1;
+          updateImageControls();
+          updateMedia();
+        }
+      });
+
+      $('#centerImage').click(function() {
+        if (selectedImageIndex >= 0) {
+          var props = imageProperties[selectedImageIndex];
+          props.offsetX = 0;
+          props.offsetY = 0;
+          updateImageControls();
+          updateMedia();
+        }
+      });
+
+      // Image property sliders
+      $('#scaleSlider').on('input', function() {
+        var value = $(this).val();
+        $('#scaleValue').text(value);
+        if (selectedImageIndex >= 0) {
+          imageProperties[selectedImageIndex].scale = parseFloat(value) / 100;
+          updateMedia();
+        }
+      });
+
+      $('#opacitySlider').on('input', function() {
+        var value = $(this).val();
+        $('#opacityValue').text(value);
+        if (selectedImageIndex >= 0) {
+          imageProperties[selectedImageIndex].opacity = parseFloat(value) / 100;
+          updateMedia();
+        }
+      });
+
+      $('#rotationSlider').on('input', function() {
+        var value = $(this).val();
+        $('#rotationValue').text(value);
+        if (selectedImageIndex >= 0) {
+          imageProperties[selectedImageIndex].rotation = parseFloat(value);
+          updateMedia();
+        }
+      });
+
+      $('#posXInput').on('input', function() {
+        if (selectedImageIndex >= 0) {
+          imageProperties[selectedImageIndex].offsetX = parseFloat($(this).val()) || 0;
+          updateMedia();
+        }
+      });
+
+      $('#posYInput').on('input', function() {
+        if (selectedImageIndex >= 0) {
+          imageProperties[selectedImageIndex].offsetY = parseFloat($(this).val()) || 0;
+          updateMedia();
+        }
+      });
+
+      function updateImageControls() {
+        var controlsContent = $('#imageControlsContent');
+        var selectedInfo = $('#selectedImageInfo');
+        
+        if (selectedImageIndex >= 0 && selectedImageIndex < imageProperties.length) {
+          var props = imageProperties[selectedImageIndex];
+          controlsContent.show();
+          selectedInfo.hide();
+          
+          // Update slider values
+          $('#scaleSlider').val(Math.round(props.scale * 100));
+          $('#scaleValue').text(Math.round(props.scale * 100));
+          $('#opacitySlider').val(Math.round(props.opacity * 100));
+          $('#opacityValue').text(Math.round(props.opacity * 100));
+          $('#rotationSlider').val(props.rotation);
+          $('#rotationValue').text(props.rotation);
+          $('#posXInput').val(Math.round(props.offsetX));
+          $('#posYInput').val(Math.round(props.offsetY));
+        } else {
+          controlsContent.hide();
+          selectedInfo.show();
+        }
+      }
     });
   </script>
 </body>
