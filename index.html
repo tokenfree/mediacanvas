@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <link href="favicon.ico" rel="icon" type="image/x-icon"/>
+  <link href="favicon.ico" rel="icon" type="image/x-icon" />
   <title>Media Canvas</title>
   <style>
     /* Import Roboto for body text, fallback to system fonts */
@@ -9,6 +10,7 @@
       font-family: 'Roboto';
       src: url('Roboto/Roboto-Regular.ttf') format('truetype');
     }
+
     @font-face {
       font-family: 'Roboto-Bold';
       src: url('Roboto/Roboto-Bold.ttf') format('truetype');
@@ -271,10 +273,46 @@
       font-weight: bold;
     }
 
-    .controls-toggle-button {
+    .bulk-download-button {
       position: absolute;
       top: 20px;
       left: 140px;
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 50%;
+      display: none;
+      z-index: 2;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .bulk-download-button:hover {
+      background: rgba(255, 255, 255, 0.95);
+      transform: scale(1.05);
+    }
+
+    .bulk-download-button:active {
+      transform: scale(0.95);
+    }
+
+    .bulk-download-button::before {
+      content: '📦';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+    }
+
+    .controls-toggle-button {
+      position: absolute;
+      top: 20px;
+      left: 200px;
       width: 50px;
       height: 50px;
       background: rgba(255, 255, 255, 0.9);
@@ -326,46 +364,59 @@
       left: 50%;
       transform: translate(-50%, -50%);
       background: white;
-      padding: 0; /* we’ll let each <li> handle its own padding */
+      padding: 0;
+      /* we’ll let each <li> handle its own padding */
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       max-height: 80vh;
       overflow-y: auto;
       z-index: 3;
       display: none;
     }
+
     .image-list ul {
       list-style: none;
       margin: 0;
       padding: 0;
     }
+
     .image-list ul li {
       display: flex;
       align-items: center;
-      padding: 8px 12px;                /* generous hit target */
-      font-size: 16px;                  /* matches symbol size if used */
-      color: #111;                      /* near-black for maximum contrast */
-      border-bottom: 1px solid #E0E0E0; /* subtle separator line */
+      padding: 8px 12px;
+      /* generous hit target */
+      font-size: 16px;
+      /* matches symbol size if used */
+      color: #111;
+      /* near-black for maximum contrast */
+      border-bottom: 1px solid #E0E0E0;
+      /* subtle separator line */
       cursor: pointer;
       white-space: nowrap;
       overflow: hidden;
     }
+
     .image-list ul li:last-child {
       border-bottom: none;
     }
+
     /* “Image”/“Video” label styling */
     .image-list ul li .media-label {
-      font-weight: 600;                 /* semibold, HIG style */
+      font-weight: 600;
+      /* semibold, HIG style */
       margin-right: 0.5em;
       color: #111;
-      flex-shrink: 0;                   /* keep full width of label */
+      flex-shrink: 0;
+      /* keep full width of label */
     }
+
     /* Numeric index (“1.”, “2.”, etc.) */
     .image-list ul li .file-index {
       margin-right: 0.3em;
       color: #111;
       flex-shrink: 0;
     }
+
     /* File name will truncate if too long */
     .image-list ul li .file-name {
       flex-grow: 1;
@@ -373,21 +424,26 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
     /* Darken/hightlight on hover */
     .image-list ul li:hover {
       background-color: #F5F5F7;
     }
+
     /* Optional: adjust scrollbar styling to match HIG aesthetic */
     .image-list::-webkit-scrollbar {
       width: 8px;
     }
+
     .image-list::-webkit-scrollbar-track {
       background: #f1f1f1;
     }
+
     .image-list::-webkit-scrollbar-thumb {
       background-color: #C4C4C6;
       border-radius: 4px;
     }
+
     .image-list::-webkit-scrollbar-thumb:hover {
       background-color: #A0A0A3;
     }
@@ -530,14 +586,17 @@
     }
   </style>
 </head>
+
 <body>
   <div class="image-container">
     <div class="background-blur"></div>
-    <img class="thumbnail" src="thumbnail.png"/>
+    <img class="thumbnail" src="thumbnail.png" />
     <div class="control-buttons">
       <div class="upload-button" onclick="document.getElementById('file-input').click()">+</div>
       <div class="blur-toggle" title="Toggle Background Blur"></div>
-      <button onclick="$('.image-controls-panel').toggle()" style="padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Toggle Controls</button>
+      <button onclick="$('.image-controls-panel').toggle()"
+        style="padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Toggle
+        Controls</button>
     </div>
   </div>
 
@@ -546,11 +605,12 @@
   <div class="full-screen">
     <div class="background-blur"></div>
     <div class="background-blur"></div>
-    <img src=""/>
+    <img src="" />
     <video controls style="display: none;"></video>
     <div class="index"></div>
     <div class="exit-button"></div>
-    <div class="download-button" title="Download with blur effect"></div>
+    <div class="download-button" title="Download current image"></div>
+    <div class="bulk-download-button" title="Download all images"></div>
     <div class="controls-toggle-button" title="Image Controls"></div>
     <div class="arrow left-arrow"></div>
     <div class="arrow right-arrow"></div>
@@ -564,7 +624,7 @@
     <button class="close-controls-btn" title="Close">×</button>
     <div class="controls-section-title">Selected Image Controls</div>
     <div id="selectedImageInfo" class="no-selection-message">Select an image to edit its properties</div>
-    
+
     <div id="imageControlsContent" style="display: none;">
       <div class="controls-button-group">
         <button class="control-action-btn" id="zoomIn" title="Zoom In">🔍+</button>
@@ -616,7 +676,7 @@
       CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius) {
         if (width < 2 * radius) radius = width / 2;
         if (height < 2 * radius) radius = height / 2;
-        
+
         this.beginPath();
         this.moveTo(x + radius, y);
         this.arcTo(x + width, y, x + width, y + height, radius);
@@ -627,7 +687,7 @@
       };
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
       $('.full-screen').hide();
       $('.full-screen .index').hide();
 
@@ -638,7 +698,7 @@
       var blurEnabled = false;
       var preloadedImages = {};  // Cache for preloaded images
       var currentBlurIndex = 0;
-      
+
       // Image control properties
       var imageProperties = [];
       var selectedImageIndex = -1;
@@ -658,7 +718,7 @@
         });
       }
 
-      $('.blur-toggle').click(function() {
+      $('.blur-toggle').click(function () {
         blurEnabled = !blurEnabled;
         $(this).toggleClass('active');
 
@@ -681,7 +741,7 @@
           var $img = $('.full-screen img');
           $img.show().attr('src', currentMedia);
           $('.full-screen video').hide()[0].pause();
-          
+
           // Apply transformations
           var transform = `translate(${props.offsetX}px, ${props.offsetY}px) scale(${props.scale}) rotate(${props.rotation}deg)`;
           $img.css({
@@ -705,14 +765,14 @@
           $('.full-screen img').hide();
           var $video = $('.full-screen video');
           $video.show().attr('src', currentMedia)[0].play();
-          
+
           // Apply transformations to video as well
           var transform = `translate(${props.offsetX}px, ${props.offsetY}px) scale(${props.scale}) rotate(${props.rotation}deg)`;
           $video.css({
             'transform': transform,
             'opacity': props.opacity
           });
-          
+
           if (blurEnabled) {
             $('.full-screen .background-blur').css({
               'display': 'block',
@@ -730,10 +790,10 @@
         } else if (type.startsWith('video')) {
           var video = document.createElement('video');
           video.src = mediaUrl;
-          video.addEventListener('loadeddata', function() {
+          video.addEventListener('loadeddata', function () {
             video.currentTime = 1;
           });
-          video.addEventListener('seeked', function() {
+          video.addEventListener('seeked', function () {
             var canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
@@ -743,17 +803,17 @@
         }
       }
 
-      $('.thumbnail').click(function() {
+      $('.thumbnail').click(function () {
         if (media.length > 0) {
           updateMedia();
           $('.full-screen').show();
-          $('.arrow, .exit-button, .download-button, .controls-toggle-button, .full-screen .index').show();
+          $('.arrow, .exit-button, .download-button, .bulk-download-button, .controls-toggle-button, .full-screen .index').show();
           $('.image-container').hide();
         }
       });
 
       // Controls toggle button
-      $('.controls-toggle-button').click(function(e) {
+      $('.controls-toggle-button').click(function (e) {
         e.stopPropagation();
         // Set the current image as selected
         selectedImageIndex = currentIndex;
@@ -761,7 +821,7 @@
         updateImageControls();
       });
 
-      $(document).keydown(function(e) {
+      $(document).keydown(function (e) {
         if ($('.full-screen').is(':visible')) {
           if (e.key === 'ArrowRight') {
             currentIndex = (currentIndex + 1) % media.length;
@@ -784,7 +844,7 @@
         }
       });
 
-      $('.arrow.left-arrow').click(function(e) {
+      $('.arrow.left-arrow').click(function (e) {
         e.stopPropagation();
         currentIndex = (currentIndex - 1 + media.length) % media.length;
         $('.arrow.right-arrow').addClass('hidden');
@@ -792,7 +852,7 @@
         updateMedia();
       });
 
-      $('.arrow.right-arrow').click(function(e) {
+      $('.arrow.right-arrow').click(function (e) {
         e.stopPropagation();
         currentIndex = (currentIndex + 1) % media.length;
         $('.arrow.left-arrow').addClass('hidden');
@@ -800,15 +860,15 @@
         updateMedia();
       });
 
-      $('.arrow.left-arrow').hover(function() {
+      $('.arrow.left-arrow').hover(function () {
         $(this).removeClass('hidden');
       });
 
-      $('.arrow.right-arrow').hover(function() {
+      $('.arrow.right-arrow').hover(function () {
         $(this).removeClass('hidden');
       });
 
-      $('.exit-button').click(function() {
+      $('.exit-button').click(function () {
         $('.full-screen').hide();
         $('.full-screen .index').hide();
         $('.image-container').show();
@@ -818,31 +878,57 @@
       });
 
       // Download functionality for blurred images
-      $('.download-button').click(function(e) {
+      $('.download-button').click(function (e) {
         e.stopPropagation();
-        
+
         if (fileTypes[currentIndex] && fileTypes[currentIndex].startsWith('image')) {
-          downloadBlurredImage();
+          downloadBlurredImage(currentIndex);
         }
       });
 
-      function downloadBlurredImage() {
+      // Bulk download functionality
+      $('.bulk-download-button').click(function (e) {
+        e.stopPropagation();
+        downloadAllImages();
+      });
+
+      function downloadAllImages() {
+        let downloadCount = 0;
+        const totalImages = media.filter((m, i) => fileTypes[i].startsWith('image')).length;
+
+        if (totalImages === 0) {
+          alert('No images to download!');
+          return;
+        }
+
+        // Download each image with a small delay to prevent browser blocking
+        media.forEach((mediaUrl, index) => {
+          if (fileTypes[index].startsWith('image')) {
+            setTimeout(() => {
+              downloadBlurredImage(index);
+              downloadCount++;
+            }, index * 300); // 300ms delay between downloads
+          }
+        });
+      }
+
+      function downloadBlurredImage(imageIndex) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const currentMedia = media[currentIndex];
-        const fileName = fileNames[currentIndex];
-        const props = imageProperties[currentIndex] || { scale: 1, opacity: 1, rotation: 0, offsetX: 0, offsetY: 0 };
-        
+        const currentMedia = media[imageIndex];
+        const fileName = fileNames[imageIndex];
+        const props = imageProperties[imageIndex] || { scale: 1, opacity: 1, rotation: 0, offsetX: 0, offsetY: 0 };
+
         const img = new Image();
-        img.onload = function() {
+        img.onload = function () {
           // Base dimensions (1920x1080)
           const baseWidth = 1920;
           const baseHeight = 1080;
-          
+
           // Determine the appropriate multiplier based on image size
           // Check both width and height separately to ensure both fit
           let multiplier = 1;
-          
+
           // Check if image fits within each resolution tier
           if (img.width <= 1920 && img.height <= 1080) {
             multiplier = 1; // 1920x1080
@@ -853,31 +939,31 @@
           } else {
             multiplier = 4; // 7680x4320
           }
-          
+
           // Set strict canvas dimensions
           const canvasWidth = baseWidth * multiplier;
           const canvasHeight = baseHeight * multiplier;
-          
+
           canvas.width = canvasWidth;
           canvas.height = canvasHeight;
-          
+
           if (blurEnabled) {
             // Create blurred background that covers the entire canvas
             ctx.filter = 'blur(25px) brightness(0.85)';
             ctx.globalAlpha = 0.9;
-            
+
             // Scale the blurred background to ensure it covers the entire canvas
             const bgScaleX = canvasWidth / img.width * 1.2; // 20% larger for blur overflow
             const bgScaleY = canvasHeight / img.height * 1.2; // 20% larger for blur overflow
             const bgScale = Math.max(bgScaleX, bgScaleY); // Use the larger scale to ensure full coverage
-            
+
             const bgWidth = img.width * bgScale;
             const bgHeight = img.height * bgScale;
             const bgX = (canvasWidth - bgWidth) / 2;
             const bgY = (canvasHeight - bgHeight) / 2;
-            
+
             ctx.drawImage(img, bgX, bgY, bgWidth, bgHeight);
-            
+
             // Reset filters and alpha for the main image
             ctx.filter = 'none';
             ctx.globalAlpha = 1;
@@ -886,11 +972,11 @@
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, canvasWidth, canvasHeight);
           }
-          
+
           // Calculate main image dimensions (90% of canvas size as base)
           const mainImageMaxWidth = canvasWidth * 0.9;
           const mainImageMaxHeight = canvasHeight * 0.9;
-          
+
           let mainWidth, mainHeight;
           if (img.width / img.height > mainImageMaxWidth / mainImageMaxHeight) {
             mainWidth = mainImageMaxWidth;
@@ -899,56 +985,56 @@
             mainHeight = mainImageMaxHeight;
             mainWidth = mainImageMaxHeight * (img.width / img.height);
           }
-          
+
           // Apply user's scale transformation
           mainWidth *= props.scale;
           mainHeight *= props.scale;
-          
+
           // Calculate base position (centered)
           let mainX = (canvasWidth - mainWidth) / 2;
           let mainY = (canvasHeight - mainHeight) / 2;
-          
+
           // Apply user's position offset
           mainX += props.offsetX;
           mainY += props.offsetY;
-          
+
           // Apply transformations with rotation
           ctx.save();
-          
+
           // Set opacity
           ctx.globalAlpha = props.opacity;
-          
+
           // Move to the center of where the image will be drawn
           const centerX = mainX + mainWidth / 2;
           const centerY = mainY + mainHeight / 2;
           ctx.translate(centerX, centerY);
-          
+
           // Apply rotation
           ctx.rotate((props.rotation * Math.PI) / 180);
-          
+
           // Add rounded corners to main image
           const cornerRadius = Math.min(mainWidth, mainHeight) * 0.05; // 5% of smaller dimension
-          
+
           ctx.beginPath();
           ctx.roundRect(-mainWidth / 2, -mainHeight / 2, mainWidth, mainHeight, cornerRadius);
           ctx.clip();
-          
+
           ctx.drawImage(img, -mainWidth / 2, -mainHeight / 2, mainWidth, mainHeight);
           ctx.restore();
-          
+
           // Create download link
-          canvas.toBlob(function(blob) {
+          canvas.toBlob(function (blob) {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            
+
             // Create filename with blur suffix
             const fileExtension = fileName.split('.').pop();
             const fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
-            const downloadFileName = blurEnabled 
+            const downloadFileName = blurEnabled
               ? `${fileNameWithoutExt}_blurred.${fileExtension}`
               : `${fileNameWithoutExt}_original.${fileExtension}`;
-            
+
             a.download = downloadFileName;
             document.body.appendChild(a);
             a.click();
@@ -956,14 +1042,14 @@
             URL.revokeObjectURL(url);
           }, 'image/png', 0.95);
         };
-        
+
         img.src = currentMedia;
       }
 
       /* ------------------------------------------------------
          UPDATED: List generation for “Image/Video”
          ------------------------------------------------------ */
-      $('.full-screen .index').click(function() {
+      $('.full-screen .index').click(function () {
         var listHtml = '';
         for (var i = 0; i < media.length; i++) {
           // Use plain text “Image” or “Video” labels in title case
@@ -971,18 +1057,18 @@
 
           listHtml +=
             '<li data-index="' + i + '">' +
-              '<span class="media-label">' + typeLabel + '</span>' +
-              '<span class="file-index">' + (i + 1) + '.</span>' +
-              '<span class="file-name">' + fileNames[i] + '</span>' +
+            '<span class="media-label">' + typeLabel + '</span>' +
+            '<span class="file-index">' + (i + 1) + '.</span>' +
+            '<span class="file-name">' + fileNames[i] + '</span>' +
             '</li>';
         }
         $('.image-list ul').html(listHtml);
         $('.image-list').show();
       });
 
-      $('.image-list').on('click', 'li', function(e) {
+      $('.image-list').on('click', 'li', function (e) {
         var clickedIndex = $(this).data('index');
-        
+
         // Check if it's a right-click or ctrl+click to open controls
         if (e.ctrlKey || e.button === 2) {
           e.preventDefault();
@@ -998,7 +1084,7 @@
       });
 
       // Add right-click context menu prevention and use it to open controls
-      $('.image-list').on('contextmenu', 'li', function(e) {
+      $('.image-list').on('contextmenu', 'li', function (e) {
         e.preventDefault();
         var clickedIndex = $(this).data('index');
         selectedImageIndex = clickedIndex;
@@ -1007,19 +1093,19 @@
         updateImageControls();
       });
 
-      $(document).mouseup(function(e) {
+      $(document).mouseup(function (e) {
         var container = $(".image-list");
         if (!container.is(e.target) && container.has(e.target).length === 0) {
           container.hide();
         }
       });
 
-      $('#file-input').on('change', function(event) {
+      $('#file-input').on('change', function (event) {
         var files = event.target.files;
         for (var i = 0; i < files.length; i++) {
           var reader = new FileReader();
-          reader.onload = (function(file) {
-            return function(e) {
+          reader.onload = (function (file) {
+            return function (e) {
               media.push(e.target.result);
               fileNames.push(file.name);
               fileTypes.push(file.type);
@@ -1041,13 +1127,13 @@
       });
 
       // Close controls panel
-      $('.close-controls-btn').click(function() {
+      $('.close-controls-btn').click(function () {
         $('.image-controls-panel').hide();
         selectedImageIndex = -1;
       });
 
       // Image control buttons
-      $('#zoomIn').click(function() {
+      $('#zoomIn').click(function () {
         if (selectedImageIndex >= 0) {
           var props = imageProperties[selectedImageIndex];
           props.scale = Math.max(0.1, Math.min(3, props.scale * 1.2));
@@ -1056,7 +1142,7 @@
         }
       });
 
-      $('#zoomOut').click(function() {
+      $('#zoomOut').click(function () {
         if (selectedImageIndex >= 0) {
           var props = imageProperties[selectedImageIndex];
           props.scale = Math.max(0.1, Math.min(3, props.scale * 0.8));
@@ -1065,7 +1151,7 @@
         }
       });
 
-      $('#resetZoom').click(function() {
+      $('#resetZoom').click(function () {
         if (selectedImageIndex >= 0) {
           imageProperties[selectedImageIndex].scale = 1;
           updateImageControls();
@@ -1073,7 +1159,7 @@
         }
       });
 
-      $('#centerImage').click(function() {
+      $('#centerImage').click(function () {
         if (selectedImageIndex >= 0) {
           var props = imageProperties[selectedImageIndex];
           props.offsetX = 0;
@@ -1083,42 +1169,54 @@
         }
       });
 
-      // Image property sliders
-      $('#scaleSlider').on('input', function() {
+      // Image property sliders - Apply to ALL images
+      $('#scaleSlider').on('input', function () {
         var value = $(this).val();
         $('#scaleValue').text(value);
         if (selectedImageIndex >= 0) {
-          imageProperties[selectedImageIndex].scale = parseFloat(value) / 100;
+          var newScale = parseFloat(value) / 100;
+          // Apply to all images
+          for (var i = 0; i < imageProperties.length; i++) {
+            imageProperties[i].scale = newScale;
+          }
           updateMedia();
         }
       });
 
-      $('#opacitySlider').on('input', function() {
+      $('#opacitySlider').on('input', function () {
         var value = $(this).val();
         $('#opacityValue').text(value);
         if (selectedImageIndex >= 0) {
-          imageProperties[selectedImageIndex].opacity = parseFloat(value) / 100;
+          var newOpacity = parseFloat(value) / 100;
+          // Apply to all images
+          for (var i = 0; i < imageProperties.length; i++) {
+            imageProperties[i].opacity = newOpacity;
+          }
           updateMedia();
         }
       });
 
-      $('#rotationSlider').on('input', function() {
+      $('#rotationSlider').on('input', function () {
         var value = $(this).val();
         $('#rotationValue').text(value);
         if (selectedImageIndex >= 0) {
-          imageProperties[selectedImageIndex].rotation = parseFloat(value);
+          var newRotation = parseFloat(value);
+          // Apply to all images
+          for (var i = 0; i < imageProperties.length; i++) {
+            imageProperties[i].rotation = newRotation;
+          }
           updateMedia();
         }
       });
 
-      $('#posXInput').on('input', function() {
+      $('#posXInput').on('input', function () {
         if (selectedImageIndex >= 0) {
           imageProperties[selectedImageIndex].offsetX = parseFloat($(this).val()) || 0;
           updateMedia();
         }
       });
 
-      $('#posYInput').on('input', function() {
+      $('#posYInput').on('input', function () {
         if (selectedImageIndex >= 0) {
           imageProperties[selectedImageIndex].offsetY = parseFloat($(this).val()) || 0;
           updateMedia();
@@ -1128,12 +1226,12 @@
       function updateImageControls() {
         var controlsContent = $('#imageControlsContent');
         var selectedInfo = $('#selectedImageInfo');
-        
+
         if (selectedImageIndex >= 0 && selectedImageIndex < imageProperties.length) {
           var props = imageProperties[selectedImageIndex];
           controlsContent.show();
           selectedInfo.hide();
-          
+
           // Update slider values
           $('#scaleSlider').val(Math.round(props.scale * 100));
           $('#scaleValue').text(Math.round(props.scale * 100));
@@ -1151,4 +1249,5 @@
     });
   </script>
 </body>
+
 </html>
